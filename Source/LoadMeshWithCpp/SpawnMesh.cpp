@@ -2,49 +2,45 @@
 
 #include "LoadMeshWithCpp.h"
 #include "SpawnMesh.h"
+#include <String>
 
 
 // Sets default values
 ASpawnMesh::ASpawnMesh()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
-
-//    RootComponent = CreateDefaultSubobject<USphereComponent>(TEXT("MySphere"));
-    
-    static ConstructorHelpers::FObjectFinder<UStaticMesh>
-    StaticMesh(TEXT("StaticMesh'/Game/Meshes/Pil_X_Fram_Hump_Z_Opp.Pil_X_Fram_Hump_Z_Opp'"));
-    
+    //Set the default mesh:
+    static ConstructorHelpers::FObjectFinder<UStaticMesh> StaticMesh(TEXT("StaticMesh'/Game/Meshes/Default.Default'"));
     UStaticMeshComponent* StaticMeshComp = GetStaticMeshComponent();
-    
     StaticMeshComp->SetStaticMesh(StaticMesh.Object);
-//    WeaponMesh->SetStaticMesh(StaticMesh1.Object);
 
-//  WeaponMesh->SetupAttachment(RootComponent);
-//    if (WeaponMesh)
-//    {
-//    SetRootComponent(WeaponMesh);
-//    }
-//    
 }
 
-//void ASpawnMesh::OnConstruction(const FTransform& Transform)
-//{
-//    WeaponMesh->SetupAttachment(RootComponent);
-//}
-
-// Called when the game starts or when spawned
 void ASpawnMesh::BeginPlay()
 {
-	Super::BeginPlay();
+    Super::BeginPlay();
     
-	
+    /**Dynamic loading of a mesh during startup*/
+    
+    //Path name - /Game/ = the real folder "Content"
+    std::string PathName = "StaticMesh'/Game/Meshes/";
+    
+    //Making the assetname with version number
+    FString Asset(AssetName + FString::FromInt(VersionNumber));
+    
+    //The full path. Asset name have to be repeated with a . between
+    FString AssetFullPath(PathName.c_str() + Asset + "." + Asset + "'");
+    UE_LOG(LogTemp, Warning, TEXT("Loading Asset Named %s"), *AssetFullPath);
+    
+    //Loading the mesh
+    UStaticMesh* StaticMesh = Cast<UStaticMesh>(StaticLoadObject(UStaticMesh::StaticClass(), NULL, *AssetFullPath));
+
+    //Testing if successfull - setting mesh or printing error
+    if (StaticMesh)
+    {
+        UStaticMeshComponent* StaticMeshComp = GetStaticMeshComponent();
+        StaticMeshComp->SetStaticMesh(StaticMesh);
+    }
+    else{
+        UE_LOG(LogTemp, Error, TEXT("No static mesh loaded"));
+    }
 }
-
-// Called every frame
-void ASpawnMesh::Tick( float DeltaTime )
-{
-	Super::Tick( DeltaTime );
-
-}
-

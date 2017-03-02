@@ -13,16 +13,15 @@ class LOADMESHWITHCPP_API ASpawnMesh : public AStaticMeshActor
 public:	
 	// Sets default values for this actor's properties
 	ASpawnMesh();
-
+    
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-	
-	// Called every frame
-	virtual void Tick( float DeltaSeconds ) override;
-    
-//    virtual void OnConstruction(const FTransform& Transform) override;
 
-	UPROPERTY(EditAnywhere)
-    UStaticMeshComponent *WeaponMesh;
-	
+    /** Set the name of the asset you want to load*/
+    UPROPERTY(EditAnywhere, Category = "MeshLoading")
+    FString AssetName;
+    
+    /** Set the version number of the asset*/
+    UPROPERTY(EditAnywhere, Category = "MeshLoading")
+    int VersionNumber = 1;
 };
